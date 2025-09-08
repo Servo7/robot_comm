@@ -1,0 +1,115 @@
+# Piper Robot Configuration
+# Configuration for transforming joints between leader and Piper follower robot
+
+joint_limits:
+  # Piper-specific joint limits (in radians)
+  joint_0:
+    min: -3.14159  # Base rotation: full rotation
+    max: 3.14159
+    name: "Piper Base Joint"
+    
+  joint_1:
+    min: -1.8326   # Shoulder pitch: ~-105° to +105°
+    max: 1.8326
+    name: "Piper Shoulder Pitch"
+    
+  joint_2:
+    min: -2.0944   # Elbow pitch: ~-120° to +120°
+    max: 2.0944
+    name: "Piper Elbow Pitch"
+    
+  joint_3:
+    min: -3.14159  # Wrist roll: full rotation
+    max: 3.14159
+    name: "Piper Wrist Roll"
+    
+  joint_4:
+    min: -1.5708   # Wrist pitch: ±90°
+    max: 1.5708
+    name: "Piper Wrist Pitch"
+    
+  joint_5:
+    min: -3.14159  # Wrist yaw: full rotation
+    max: 3.14159
+    name: "Piper Wrist Yaw"
+
+# Joint mapping: Leader joint index -> Piper joint index
+# This remaps joints if leader and Piper have different joint ordering
+joint_mapping:
+  0: 0  # Leader base -> Piper base
+  1: 1  # Leader shoulder -> Piper shoulder  
+  2: 2  # Leader elbow -> Piper elbow
+  3: 3  # Leader wrist_roll -> Piper wrist_roll
+  4: 4  # Leader wrist_pitch -> Piper wrist_pitch
+  5: 5  # Leader wrist_yaw -> Piper wrist_yaw
+
+# Joint offsets: Add constant values to each joint (in radians)
+# Useful for calibration differences between robots
+joint_offsets:
+  - 0.0    # Joint 0: No offset
+  - 0.1    # Joint 1: Add 0.1 rad (~5.7°) 
+  - -0.05  # Joint 2: Subtract 0.05 rad (~-2.9°)
+  - 0.0    # Joint 3: No offset
+  - 0.02   # Joint 4: Add 0.02 rad (~1.1°)
+  - 0.0    # Joint 5: No offset
+
+# Transformation matrix for Piper
+# Applies scaling/corrections between leader and Piper joint spaces
+# Example: Some joints might need different scaling due to different robot kinematics
+transformation_matrix:
+  # 6x6 matrix: each row transforms one joint
+  - [1.0,  0.0,  0.0,  0.0,  0.0,  0.0]   # Joint 0: No transformation
+  - [0.0,  0.8,  0.0,  0.0,  0.0,  0.0]   # Joint 1: Scale by 0.8 (80% range)
+  - [0.0,  0.0,  1.2,  0.0,  0.0,  0.0]   # Joint 2: Scale by 1.2 (120% range)
+  - [0.0,  0.0,  0.0, -1.0,  0.0,  0.0]   # Joint 3: Invert direction
+  - [0.0,  0.0,  0.0,  0.0,  1.0,  0.0]   # Joint 4: No transformation
+  - [0.0,  0.0,  0.0,  0.0,  0.0,  1.0]   # Joint 5: No transformation
+
+# Piper-specific settings
+piper_settings:
+  # Motion smoothing
+  max_joint_velocity: 1.0  # rad/s
+  max_joint_acceleration: 2.0  # rad/s²
+  
+  # Safety settings
+  emergency_stop_on_limits: true
+  joint_monitoring: true
+  
+  # Gripper settings for Piper
+  gripper_type: "parallel"
+  gripper_max_width: 0.085  # 85mm max opening
+  gripper_force_limit: 40.0  # 40N max force
+  
+  # Communication settings
+  piper_ip: "192.168.1.100"
+  piper_port: 8080
+  control_frequency: 100  # Hz
+
+# Example alternative configurations for different scenarios
+configurations:
+  # Conservative mode: reduced speeds and ranges
+  conservative:
+    transformation_matrix:
+      - [0.7,  0.0,  0.0,  0.0,  0.0,  0.0]   # Reduce all ranges
+      - [0.0,  0.6,  0.0,  0.0,  0.0,  0.0]   # by scaling down
+      - [0.0,  0.0,  0.8,  0.0,  0.0,  0.0]
+      - [0.0,  0.0,  0.0, -0.7,  0.0,  0.0]
+      - [0.0,  0.0,  0.0,  0.0,  0.7,  0.0]
+      - [0.0,  0.0,  0.0,  0.0,  0.0,  0.7]
+  
+  # Mirror mode: flip some joints for mirrored operation
+  mirror:
+    joint_mapping:
+      0: 0   # Base stays same
+      1: 1   # Shoulder stays same  
+      2: 2   # Elbow stays same
+      3: 3   # Wrist roll stays same
+      4: 4   # Wrist pitch stays same
+      5: 5   # Wrist yaw stays same
+    transformation_matrix:
+      - [-1.0, 0.0,  0.0,  0.0,  0.0,  0.0]   # Flip base
+      - [0.0,  1.0,  0.0,  0.0,  0.0,  0.0]
+      - [0.0,  0.0, -1.0,  0.0,  0.0,  0.0]   # Flip elbow
+      - [0.0,  0.0,  0.0,  1.0,  0.0,  0.0]
+      - [0.0,  0.0,  0.0,  0.0, -1.0,  0.0]   # Flip wrist pitch
+      - [0.0,  0.0,  0.0,  0.0,  0.0,  1.0]

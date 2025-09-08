@@ -69,7 +69,8 @@ def validate_joint_limits(
 def transform_joints(
     joint_values: Union[List[float], JointState],
     transformation_matrix: Optional[np.ndarray] = None,
-    joint_mapping: Optional[Dict[int, int]] = None
+    joint_mapping: Optional[Dict[int, int]] = None,
+    joint_offsets: Optional[List[float]] = None
 ) -> List[float]:
     """
     Transform joint values between different robot configurations.
@@ -78,6 +79,7 @@ def transform_joints(
         joint_values: Input joint values (List or JointState)
         transformation_matrix: Optional transformation matrix to apply
         joint_mapping: Optional mapping of joint indices (e.g., {0: 2, 1: 0, 2: 1} to reorder)
+        joint_offsets: Optional offsets to add to each joint (e.g., [0.1, -0.2, 0.0, ...])
         
     Returns:
         Transformed joint values as list
@@ -105,6 +107,17 @@ def transform_joints(
         else:
             logger.warning(
                 f"Transformation matrix shape {transformation_matrix.shape} doesn't match "
+                f"joint count {len(transformed)}"
+            )
+    
+    # Apply joint offsets if provided
+    if joint_offsets is not None:
+        offsets_array = np.array(joint_offsets)
+        if len(offsets_array) == len(transformed):
+            transformed = transformed + offsets_array
+        else:
+            logger.warning(
+                f"Joint offsets length {len(offsets_array)} doesn't match "
                 f"joint count {len(transformed)}"
             )
     

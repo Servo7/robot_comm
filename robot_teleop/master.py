@@ -11,6 +11,7 @@ from .utils import (
     transform_joints,
     load_config
 )
+from .joint_state import JointState
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,12 +58,14 @@ class MasterNode:
             self.joint_limits = config.get('joint_limits', {})
             self.joint_mapping = config.get('joint_mapping')
             self.transformation_matrix = config.get('transformation_matrix')
+            self.joint_offsets = config.get('joint_offsets')
             if self.transformation_matrix:
                 self.transformation_matrix = np.array(self.transformation_matrix)
         else:
             self.joint_limits = joint_limits or {}
             self.joint_mapping = None
             self.transformation_matrix = None
+            self.joint_offsets = None
         
         # Statistics
         self.messages_received = 0
@@ -104,7 +107,8 @@ class MasterNode:
         transformed_joints = transform_joints(
             joint_state,
             self.transformation_matrix,
-            self.joint_mapping
+            self.joint_mapping,
+            self.joint_offsets
         )
         
         # Create new JointState with transformed joints
