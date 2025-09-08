@@ -52,14 +52,18 @@ class TestTransformations:
         """Test joint offsets with JointState input."""
         joint_state = JointState(
             joint_0=1.0, joint_1=0.5, joint_2=-0.3,
-            joint_3=0.8, joint_4=0.0, joint_5=-0.7
+            joint_3=0.8, joint_4=0.0, joint_5=-0.7,
+            gripper=0.5
         )
         offsets = [0.1, 0.2, -0.1, 0.0, 0.3, 0.05]
         
         result = transform_joints(joint_state, joint_offsets=offsets)
+        # When input is JointState, returns tuple (joints, gripper)
+        joints, gripper = result
         expected = [1.1, 0.7, -0.4, 0.8, 0.3, -0.65]  # joint values + offsets
         
-        np.testing.assert_array_almost_equal(result, expected, decimal=6)
+        np.testing.assert_array_almost_equal(joints, expected, decimal=6)
+        assert abs(gripper - 0.5) < 0.01  # Gripper unchanged with default scale/offset
 
     def test_transformation_matrix_with_offsets(self):
         """Test transformation matrix combined with offsets."""
@@ -79,6 +83,8 @@ class TestTransformations:
         # Then add offsets: [0.5,0.5,0.5,0.5,0.5,0.5] + [0.1,0.2,0.3,0.4,0.5,0.6]
         expected = [0.6, 0.7, 0.8, 0.9, 1.0, 1.1]
         
+        # With list input, should return list (not tuple)
+        assert isinstance(result, list)
         np.testing.assert_array_almost_equal(result, expected, decimal=6)
 
     def test_mapping_matrix_offsets_combined(self):
@@ -141,6 +147,8 @@ class TestTransformations:
         # Expected: [1.0, 0.8, 1.2, -1.0, 1.0, 1.0] + offsets
         expected = [1.0, 0.9, 1.15, -1.0, 1.02, 1.0]
         
+        # With list input, should return list
+        assert isinstance(result, list)
         np.testing.assert_array_almost_equal(result, expected, decimal=6)
 
     def test_mirror_transformation(self):

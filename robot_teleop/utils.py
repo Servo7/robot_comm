@@ -70,8 +70,10 @@ def transform_joints(
     joint_values: Union[List[float], JointState],
     transformation_matrix: Optional[np.ndarray] = None,
     joint_mapping: Optional[Dict[int, int]] = None,
-    joint_offsets: Optional[List[float]] = None
-) -> List[float]:
+    joint_offsets: Optional[List[float]] = None,
+    gripper_scale: float = 1.0,
+    gripper_offset: float = 0.0
+) -> Union[List[float], Tuple[List[float], float]]:
     """
     Transform joint values between different robot configurations.
     
@@ -80,15 +82,21 @@ def transform_joints(
         transformation_matrix: Optional transformation matrix to apply
         joint_mapping: Optional mapping of joint indices (e.g., {0: 2, 1: 0, 2: 1} to reorder)
         joint_offsets: Optional offsets to add to each joint (e.g., [0.1, -0.2, 0.0, ...])
+        gripper_scale: Scale factor for gripper (default 1.0)
+        gripper_offset: Offset to add to gripper value (default 0.0)
         
     Returns:
-        Transformed joint values as list
+        If input is List: returns transformed joint values as list
+        If input is JointState: returns tuple of (transformed joints, transformed gripper)
     """
     # Convert JointState to list if needed
-    if isinstance(joint_values, JointState):
+    is_joint_state = isinstance(joint_values, JointState)
+    if is_joint_state:
         values_to_transform = joint_values.to_list()
+        original_gripper = joint_values.gripper
     else:
         values_to_transform = joint_values
+        original_gripper = None
     
     transformed = np.array(values_to_transform)
     
@@ -121,7 +129,17 @@ def transform_joints(
                 f"joint count {len(transformed)}"
             )
     
-    return transformed.tolist()
+    transformed_joints = transformed.tolist()
+    
+    # If input was JointState, also transform gripper
+    if is_joint_state:
+        # Apply gripper transformation: scale then offset
+        transformed_gripper = (original_gripper * gripper_scale) + gripper_offset
+        # Clamp gripper to valid range [0, 1]
+        transformed_gripper = max(0.0, min(1.0, transformed_gripper))
+        return transformed_joints, transformed_gripper
+    
+    return transformed_joints 
 
 
 def serialize_joint_message(joint_state: Union[JointState, List[float]], timestamp: Optional[float] = None) -> Dict:

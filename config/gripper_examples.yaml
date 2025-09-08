@@ -1,0 +1,112 @@
+# Example configurations for different gripper transformations
+
+# Example 1: Different gripper sizes
+# Leader has small gripper (0-50mm), follower has large gripper (0-85mm)
+different_gripper_size:
+  gripper_scale: 1.7      # 85mm / 50mm = 1.7
+  gripper_offset: 0.0     # No offset needed
+  
+  # Joint limits and transformations...
+  joint_limits:
+    joint_0: {min: -3.14, max: 3.14}
+    joint_1: {min: -1.57, max: 1.57}
+    joint_2: {min: -2.09, max: 2.09}
+    joint_3: {min: -3.14, max: 3.14}
+    joint_4: {min: -1.57, max: 1.57}
+    joint_5: {min: -3.14, max: 3.14}
+
+# Example 2: Inverted gripper logic
+# Leader: 0=closed, 1=open | Follower: 1=closed, 0=open
+inverted_gripper:
+  gripper_scale: -1.0     # Invert the gripper
+  gripper_offset: 1.0     # Shift to correct range
+  # Result: follower_gripper = (leader_gripper * -1.0) + 1.0
+  # When leader=0 (closed): follower = 0*(-1) + 1 = 1 (closed)
+  # When leader=1 (open): follower = 1*(-1) + 1 = 0 (open)
+
+# Example 3: Gripper calibration offset
+# Gripper has different zero position due to calibration
+gripper_calibration:
+  gripper_scale: 1.0      # Same size gripper
+  gripper_offset: 0.15    # Follower gripper needs +15% offset
+  # Result: follower always 15% more open than leader
+
+# Example 4: Reduced gripper range for safety
+# Limit follower gripper to only use 20%-80% of its range
+safety_limited_gripper:
+  gripper_scale: 0.6      # Reduce range to 60%
+  gripper_offset: 0.2     # Start at 20% minimum
+  # Result: maps leader [0,1] to follower [0.2, 0.8]
+  # Leader 0 -> Follower 0.2 (20% open minimum)
+  # Leader 1 -> Follower 0.8 (80% open maximum)
+
+# Example 5: Complex gripper mapping
+# Different gripper with calibration and safety limits
+complex_gripper:
+  # Leader gripper: 0-50mm, 0=closed
+  # Follower gripper: 0-100mm, but limit to 10-90mm for safety, with 5mm calibration offset
+  
+  gripper_scale: 1.6      # (90-10)/(50-0) = 80/50 = 1.6
+  gripper_offset: 0.1     # 10mm minimum = 10% of 100mm range
+  
+  # Joints also have transformations
+  joint_mapping:
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
+    5: 5
+  
+  transformation_matrix:
+    - [1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    - [0.0, 0.9, 0.0, 0.0, 0.0, 0.0]  # Scale down joint 1
+    - [0.0, 0.0, 1.1, 0.0, 0.0, 0.0]  # Scale up joint 2
+    - [0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+  
+  joint_offsets:
+    - 0.0
+    - 0.05   # Small calibration offset
+    - -0.03
+    - 0.0
+    - 0.0
+    - 0.0
+  
+  joint_limits:
+    joint_0: {min: -3.14, max: 3.14}
+    joint_1: {min: -1.57, max: 1.57}
+    joint_2: {min: -2.09, max: 2.09}
+    joint_3: {min: -3.14, max: 3.14}
+    joint_4: {min: -1.57, max: 1.57}
+    joint_5: {min: -3.14, max: 3.14}
+
+# Example 6: Proportional gripper
+# Make follower gripper open proportionally less
+proportional_gripper:
+  gripper_scale: 0.7      # Follower opens to 70% of leader
+  gripper_offset: 0.0     # No offset
+  # Leader 50% open -> Follower 35% open
+  # Leader 100% open -> Follower 70% open
+
+# Example 7: Gripper with deadzone
+# Add deadzone at beginning of gripper travel
+gripper_deadzone:
+  gripper_scale: 1.25     # Scale up by 125%
+  gripper_offset: -0.2    # But subtract 0.2
+  # Result: First 16% of leader movement does nothing (deadzone)
+  # Leader 0.0 -> Follower 0.0 (clamped)
+  # Leader 0.16 -> Follower 0.0 (at threshold)
+  # Leader 0.5 -> Follower 0.425
+  # Leader 1.0 -> Follower 1.0 (clamped)
+
+# Example 8: Testing configuration
+# Extreme values for testing clamping behavior
+test_gripper_clamping:
+  gripper_scale: 3.0      # Very large scale
+  gripper_offset: -0.5    # Large negative offset
+  # Tests that values are properly clamped to [0, 1]
+  # Leader 0.5 -> 0.5*3.0 - 0.5 = 1.0 (clamped from 1.0)
+  # Leader 0.1 -> 0.1*3.0 - 0.5 = -0.2 -> 0.0 (clamped)
+  # Leader 0.7 -> 0.7*3.0 - 0.5 = 1.6 -> 1.0 (clamped)

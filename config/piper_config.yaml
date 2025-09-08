@@ -53,6 +53,11 @@ joint_offsets:
   - 0.0   # Joint 4: Add 0.02 rad (~1.1°)
   - 0.0    # Joint 5: No offset
 
+# Gripper transformation settings
+# Scale and offset for gripper values (0.0 = closed, 1.0 = open)
+gripper_scale: 1.2     # Scale gripper range by 120% (e.g., for different gripper sizes)
+gripper_offset: -0.1   # Offset gripper by -0.1 (calibration difference)
+
 # Transformation matrix for Piper
 # Applies scaling/corrections between leader and Piper joint spaces
 # Example: Some joints might need different scaling due to different robot kinematics

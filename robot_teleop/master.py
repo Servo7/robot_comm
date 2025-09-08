@@ -59,6 +59,9 @@ class MasterNode:
             self.joint_mapping = config.get('joint_mapping')
             self.transformation_matrix = config.get('transformation_matrix')
             self.joint_offsets = config.get('joint_offsets')
+            # Gripper transformation settings
+            self.gripper_scale = config.get('gripper_scale', 1.0)
+            self.gripper_offset = config.get('gripper_offset', 0.0)
             if self.transformation_matrix:
                 self.transformation_matrix = np.array(self.transformation_matrix)
         else:
@@ -66,6 +69,8 @@ class MasterNode:
             self.joint_mapping = None
             self.transformation_matrix = None
             self.joint_offsets = None
+            self.gripper_scale = 1.0
+            self.gripper_offset = 0.0
         
         # Statistics
         self.messages_received = 0
@@ -103,16 +108,25 @@ class MasterNode:
         Returns:
             Processed JointState or None if validation fails
         """
-        # Apply transformation to joint values
-        transformed_joints = transform_joints(
+        # Apply transformation to joint values and gripper
+        result = transform_joints(
             joint_state,
             self.transformation_matrix,
             self.joint_mapping,
-            self.joint_offsets
+            self.joint_offsets,
+            self.gripper_scale,
+            self.gripper_offset
         )
         
-        # Create new JointState with transformed joints
-        transformed_state = joint_state.apply_joint_values(transformed_joints)
+        # Handle the result based on whether gripper was transformed
+        if isinstance(result, tuple):
+            transformed_joints, transformed_gripper = result
+            # Create new JointState with transformed joints and gripper
+            transformed_state = joint_state.apply_joint_values(transformed_joints)
+            transformed_state.gripper = transformed_gripper
+        else:
+            # Backward compatibility: result is just joint list
+            transformed_state = joint_state.apply_joint_values(result)
         
         # Validate limits
         if self.joint_limits:

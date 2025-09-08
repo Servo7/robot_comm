@@ -134,10 +134,10 @@ class TestJointTransformation:
         )
         mapping = {0: 1, 1: 0, 2: 2, 3: 3, 4: 4, 5: 5}  # Swap 0 and 1
         
-        result = transform_joints(joint_state, joint_mapping=mapping)
+        joints, gripper = transform_joints(joint_state, joint_mapping=mapping)
         
         expected = [0.2, 0.1, 0.3, 0.4, 0.5, 0.6]  # 0 and 1 swapped
-        assert result == expected
+        assert joints == expected
 
 
 class TestMessageSerialization:
