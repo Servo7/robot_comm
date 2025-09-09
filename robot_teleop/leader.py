@@ -89,7 +89,7 @@ class LeaderNode:
                 start_time = time.time()
                 
                 # Get current joint state from callback
-                joint_data = get_joints_callback()
+                joint_data, gripper = get_joints_callback()
                 
                 if joint_data is not None:
                     self.publish_joints(joint_data, gripper)

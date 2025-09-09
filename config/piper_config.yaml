@@ -24,13 +24,13 @@ joint_limits:
     name: "Piper Wrist Roll"
     
   joint_4:
-    min: -360000   # Wrist pitch: ±90°
-    max: 360000 
+    min: -80000   # Wrist pitch: ±90°
+    max:  670000
     name: "Piper Wrist Pitch"
     
   joint_5:
-    min: -360000  # Wrist yaw: full rotation
-    max: 360000 
+    min: -120000  # Wrist yaw: full rotation
+    max: 120000
     name: "Piper Wrist Yaw"
 
 # Joint mapping: Leader joint index -> Piper joint index
@@ -55,8 +55,8 @@ joint_offsets:
 
 # Gripper transformation settings
 # Scale and offset for gripper values (0.0 = closed, 1.0 = open)
-gripper_scale: 1.2     # Scale gripper range by 120% (e.g., for different gripper sizes)
-gripper_offset: -0.1   # Offset gripper by -0.1 (calibration difference)
+gripper_scale: 100000     # Scale gripper range by 120% (e.g., for different gripper sizes)
+gripper_offset: 0   # Offset gripper by -0.1 (calibration difference)
 
 # Transformation matrix for Piper
 # Applies scaling/corrections between leader and Piper joint spaces
@@ -66,9 +66,9 @@ transformation_matrix:
   - [-1000.0,  0.0,  0.0,  0.0,  0.0,  0.0]   # Joint 0: No transformation
   - [0.0,  1000,  0.0,  0.0,  0.0,  0.0]   # Joint 1: Scale by 0.8 (80% range)
   - [0.0,  0.0,  850,  0.0,  0.0,  0.0]   # Joint 2: Scale by 1.2 (120% range)
-  - [0.0,  0.0,  0.0, -1.0,  0.0,  0.0]   # Joint 3: Invert direction
-  - [0.0,  0.0,  0.0,  0.0,  1.0,  0.0]   # Joint 4: No transformation
-  - [0.0,  0.0,  0.0,  0.0,  0.0,  1.0]   # Joint 5: No transformation
+  - [0.0,  0.0,  0.0, 1,  0.0,  0.0]   # Joint 3: Invert direction
+  - [0.0,  0.0,  0.0,  0.0,  800,  0.0]   # Joint 4: No transformation
+  - [0.0,  0.0,  0.0,  0.0,  0.0,  1100]   # Joint 5: No transformation
 
 # Piper-specific settings
 piper_settings:
