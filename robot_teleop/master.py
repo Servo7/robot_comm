@@ -138,7 +138,7 @@ class MasterNode:
                     logger.warning(f"  - {violation}")
                 self.messages_blocked += 1
                 return None
-        
+        print(transformed_state) 
         return transformed_state
     
     def start(self):

@@ -73,7 +73,7 @@ class LeaderNode:
         except Exception as e:
             logger.error(f"Failed to publish joint state: {e}")
     
-    def publish_loop(self, get_joints_callback, rate: float = 100.0):
+    def publish_loop(self, get_joints_callback, gripper: float = 0,  rate: float = 100.0):
         """
         Continuous publishing loop.
         
@@ -92,7 +92,7 @@ class LeaderNode:
                 joint_data = get_joints_callback()
                 
                 if joint_data is not None:
-                    self.publish_joints(joint_data)
+                    self.publish_joints(joint_data, gripper)
                 
                 # Maintain rate
                 elapsed = time.time() - start_time

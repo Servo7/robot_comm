@@ -20,12 +20,12 @@ def main():
                         help="Port to subscribe to leader (default: 5555)")
     parser.add_argument("--follower-port", type=int, default=5556,
                         help="Port to publish to follower (default: 5556)")
-    parser.add_argument("--follower-address", type=str, default="*",
+    parser.add_argument("--follower-address", type=str, default="192.168.1.234",
                         help="Address to bind publisher (default: * for all interfaces)")
     
     # Configuration
     parser.add_argument("--config", type=str, 
-                        default=os.path.join(os.path.dirname(__file__), "..", "config", "joint_limits.yaml"),
+                        default=os.path.join(os.path.dirname(__file__), "..", "config", "piper_config.yaml"),
                         help="Path to configuration file with joint limits")
     parser.add_argument("--no-limits", action="store_true",
                         help="Disable joint limit checking (not recommended)")
@@ -42,7 +42,7 @@ def main():
     
     # Create master node
     master = MasterNode(
-        subscribe_address=args.leader_address,
+        subscribe_address="192.168.1.140",
         subscribe_port=args.leader_port,
         publish_port=args.follower_port,
         publish_address=args.follower_address,

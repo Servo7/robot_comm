@@ -4,33 +4,33 @@
 joint_limits:
   # Piper-specific joint limits (in radians)
   joint_0:
-    min: -3.14159  # Base rotation: full rotation
-    max: 3.14159
+    min: -100000  # Base rotation: full rotation
+    max: 100000
     name: "Piper Base Joint"
     
   joint_1:
-    min: -1.8326   # Shoulder pitch: ~-105° to +105°
-    max: 1.8326
+    min: -1000   # Shoulder pitch: ~-105° to +105°
+    max: 189000 
     name: "Piper Shoulder Pitch"
     
   joint_2:
-    min: -2.0944   # Elbow pitch: ~-120° to +120°
-    max: 2.0944
+    min: -360000   # Elbow pitch: ~-120° to +120°
+    max: 360000 
     name: "Piper Elbow Pitch"
     
   joint_3:
-    min: -3.14159  # Wrist roll: full rotation
-    max: 3.14159
+    min: -360000  # Wrist roll: full rotation
+    max: 360000
     name: "Piper Wrist Roll"
     
   joint_4:
-    min: -1.5708   # Wrist pitch: ±90°
-    max: 1.5708
+    min: -360000   # Wrist pitch: ±90°
+    max: 360000 
     name: "Piper Wrist Pitch"
     
   joint_5:
-    min: -3.14159  # Wrist yaw: full rotation
-    max: 3.14159
+    min: -360000  # Wrist yaw: full rotation
+    max: 360000 
     name: "Piper Wrist Yaw"
 
 # Joint mapping: Leader joint index -> Piper joint index
@@ -47,8 +47,8 @@ joint_mapping:
 # Useful for calibration differences between robots
 joint_offsets:
   - 0.0    # Joint 0: No offset
-  - 0.0    # Joint 1: Add 0.1 rad (~5.7°) 
-  - 0.0  # Joint 2: Subtract 0.05 rad (~-2.9°)
+  - 100000   # Joint 1: Add 0.1 rad (~5.7°) 
+  - -85000  # Joint 2: Subtract 0.05 rad (~-2.9°)
   - 0.0    # Joint 3: No offset
   - 0.0   # Joint 4: Add 0.02 rad (~1.1°)
   - 0.0    # Joint 5: No offset
@@ -63,9 +63,9 @@ gripper_offset: -0.1   # Offset gripper by -0.1 (calibration difference)
 # Example: Some joints might need different scaling due to different robot kinematics
 transformation_matrix:
   # 6x6 matrix: each row transforms one joint
-  - [1.0,  0.0,  0.0,  0.0,  0.0,  0.0]   # Joint 0: No transformation
-  - [0.0,  0.8,  0.0,  0.0,  0.0,  0.0]   # Joint 1: Scale by 0.8 (80% range)
-  - [0.0,  0.0,  1.2,  0.0,  0.0,  0.0]   # Joint 2: Scale by 1.2 (120% range)
+  - [-1000.0,  0.0,  0.0,  0.0,  0.0,  0.0]   # Joint 0: No transformation
+  - [0.0,  1000,  0.0,  0.0,  0.0,  0.0]   # Joint 1: Scale by 0.8 (80% range)
+  - [0.0,  0.0,  850,  0.0,  0.0,  0.0]   # Joint 2: Scale by 1.2 (120% range)
   - [0.0,  0.0,  0.0, -1.0,  0.0,  0.0]   # Joint 3: Invert direction
   - [0.0,  0.0,  0.0,  0.0,  1.0,  0.0]   # Joint 4: No transformation
   - [0.0,  0.0,  0.0,  0.0,  0.0,  1.0]   # Joint 5: No transformation

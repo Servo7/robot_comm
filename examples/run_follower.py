@@ -10,7 +10,7 @@ import argparse
 from robot_teleop import FollowerNode
 
 
-def process_joint_commands(joints, timestamp):
+def process_joint_commands(joints):
     """
     Process received joint commands.
     In production, this would send commands to the actual robot.
@@ -19,20 +19,14 @@ def process_joint_commands(joints, timestamp):
         joints: List of joint values
         timestamp: Timestamp of the message
     """
-    # Format joint values for display
-    joint_str = ", ".join([f"{j:6.3f}" for j in joints])
-    age = time.time() - timestamp
     
-    print(f"Joints: [{joint_str}] | Age: {age:.3f}s")
+    print(f"Joints: [{joints}]")
     
-    # TODO: In production, send these to actual robot
-    # Example:
-    # robot.set_joint_positions(joints)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Follower node for robot teleoperation")
-    parser.add_argument("--address", type=str, default="localhost",
+    parser.add_argument("--address", type=str, default="192.168.1.234",
                         help="Address of the master node (default: localhost)")
     parser.add_argument("--port", type=int, default=5556,
                         help="Port to subscribe for commands (default: 5556)")
@@ -54,7 +48,8 @@ def main():
     print(f"Mode: {args.mode}")
     print("Press Ctrl+C to stop")
     
-    if args.mode == "callback":
+    # if args.mode == "callback":
+    if False:
         # Start background receiving
         follower.start()
         
@@ -84,7 +79,7 @@ def main():
                 joints, timestamp = follower.get_latest_joints_with_timestamp()
                 
                 if joints is not None:
-                    process_joint_commands(joints, timestamp)
+                    process_joint_commands(joints)
                 else:
                     print("Waiting for data...")
                 

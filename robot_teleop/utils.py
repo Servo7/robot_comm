@@ -62,6 +62,7 @@ def validate_joint_limits(
                 violations.append(
                     f"{joint_name}: value {value:.3f} outside limits [{min_val:.3f}, {max_val:.3f}]"
                 )
+
     
     return len(violations) == 0, violations
 
